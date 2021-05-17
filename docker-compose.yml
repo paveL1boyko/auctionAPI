@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  web:
+    build: ./app
+    env_file:
+      - .env.dev
+      - .env
+    command: gunicorn --bind 0.0.0.0:8000 auctionAPI.wsgi
+    volumes:
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/scr/app/static/
+      - media_volume:/usr/scr/app/media/
+    depends_on:
+      - db
+    expose:
+      - 8000
+  db:
+    image: postgres:12
+    env_file:
+      - .env
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data/
+    ports:
+      - 5433:5432
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/usr/scr/app/static/
+      - media_volume:/usr/scr/app/media/
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+volumes:
+  postgres_volume:
+  static_volume:
+  media_volume:
