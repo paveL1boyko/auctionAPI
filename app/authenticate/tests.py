@@ -9,9 +9,19 @@ from authenticate.serializer import UserSerializer
 class RegistrationAPIViewTest(APITestCase):
     client = APIClient()
 
-    def test_create_new_user(self):
+
+    def test_create_new_user_with_too_common_password(self):
         response = self.client.post(reverse('authenticate:registration'),
                                     {'username': 'admin', 'password': '12345678'},
+                                    format='json')
+
+        self.assertEqual(response.data.get('password').get('password')[0].__str__(),
+                         'This password is too common.')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_new_user_with_correct_password(self):
+        response = self.client.post(reverse('authenticate:registration'),
+                                    {'username': 'admin', 'password': 'afer14rarae'},
                                     format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -41,7 +51,7 @@ class UserRetrieveAPIViewTest(APITestCase):
         self.user = CustomUser.objects.create_user(password='test', username='admin', balance=10000,
                                                    email='test@gmail.com', last_name='adminovich', first_name='admin')
 
-    def test_create_new_user(self):
+    def test_get_user_data(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.user.token)
         response = self.client.get(reverse('authenticate:user_data'), format='json')
         serializer = UserSerializer(CustomUser.objects.get(pk=self.user.pk))
