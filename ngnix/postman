@@ -10194,18 +10194,6 @@
             },
             "description": "OK"
           },
-          "422": {
-            "content": {
-              "application/json": {
-                "examples": {},
-                "schema": {
-                  "$ref": "#/components/schemas/6a07bef.UnprocessableEntity"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          }
-        },
         "summary": "Register new user account",
         "tags": [
           "Auth"
